@@ -7,6 +7,8 @@
 // @grant       GM_addStyle
 // @grant       GM_getValue
 // @grant       GM_setValue
+// @grant       GM_getResourceText
+// @resource    ctrldropdownmenu.css https://raw.github.com/FromHeartToSun/SC2TVUserscript/master/ctrldropdownmenu.css
 // ==/UserScript==
 
 (function() {
@@ -69,31 +71,7 @@
     })(tabPreferences.preferredTab());
 
     (function prepareCtrlDropdownMenu() {
-        GM_addStyle('                            \
-            #visual {                            \
-                z-index: 2 !important;           \
-            }                                    \
-            #visual-content, #quicktabs-2 ul {   \
-                overflow: visible !important;    \
-            }                                    \
-            #quicktabs-2 ul li:hover .ctrl-dropdown-menu.enabled { \
-                display: block;                  \
-            }                                    \
-            .ctrl-dropdown-menu {                \
-                display: none;                   \
-                position: absolute;              \
-            }                                    \
-            .ctrl-dropdown-menu-item {           \
-                display: list-item !important;   \
-                text-transform: none !important; \
-                float: none !important;          \
-                color: white !important;         \
-                width: auto !important;          \
-                height: auto !important;         \
-                padding: 0px 10px !important;    \
-                cursor: pointer !important;      \
-            }                                    \
-        ');
+        GM_addStyle(GM_getResourceText('ctrldropdownmenu.css'));
 
         var ctrlHeld = false;
         document.addEventListener('keydown', function(e) {

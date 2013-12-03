@@ -1,0 +1,27 @@
+#visual {
+    z-index: 2 !important;
+}
+
+#visual-content, #quicktabs-2 ul {
+    overflow: visible !important;
+}
+
+#quicktabs-2 ul li:hover .ctrl-dropdown-menu.enabled {
+    display: block;
+}
+
+.ctrl-dropdown-menu {
+    display: none;
+    position: absolute;
+}
+
+.ctrl-dropdown-menu-item {
+    display: list-item !important;
+    text-transform: none !important;
+    float: none !important;
+    color: white !important;
+    width: auto !important;
+    height: auto !important;
+    padding: 0px 10px !important;
+    cursor: pointer !important;
+}

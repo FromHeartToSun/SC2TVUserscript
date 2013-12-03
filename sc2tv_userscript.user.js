@@ -1,5 +1,6 @@
 // ==UserScript==
 // @name        sc2tv.ru userscript
+// @description Stream tabs preferences.
 // @namespace   http://sc2tv.ru/users/Heart
 // @author      Heart
 // @include     http://sc2tv.ru/*
@@ -115,13 +116,13 @@
             };
         };
         var createOpenCtrlDropdownMenuItem = function(tabText) {
-            return createCtrlDropdownMenuItem('Открывать по умолчанию', function() {
+            return createCtrlDropdownMenuItem('РћС‚РєСЂС‹РІР°С‚СЊ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ', function() {
                 tabPreferences.savePreference(tabText);
                 injectStreamCtrlDropdownMenu(true);
             });
         };
         var createClearCtrlDropdownMenuItem = function() {
-            return createCtrlDropdownMenuItem('Очистить выбор', function() {
+            return createCtrlDropdownMenuItem('РћС‡РёСЃС‚РёС‚СЊ РІС‹Р±РѕСЂ', function() {
                 tabPreferences.clearPreference();
                 injectStreamCtrlDropdownMenu(true);
             });

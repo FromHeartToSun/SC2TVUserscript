@@ -4,17 +4,17 @@
 // @namespace   http://sc2tv.ru/users/Heart
 // @author      Heart
 // @include     http://sc2tv.ru/*
-// @version     0.0.2
+// @version     0.0.3
 // @grant       GM_addStyle
 // @grant       GM_getValue
 // @grant       GM_setValue
-// @grant       GM_getResourceText
 // @updateURL   http://userscripts.org/scripts/source/185295.meta.js
 // @downloadURL http://userscripts.org/scripts/source/185295.user.js
-// @resource    ctrldropdownmenu.css https://raw.github.com/FromHeartToSun/SC2TVUserscript/master/ctrldropdownmenu.css
 // ==/UserScript==
 
 (function() {
+    GM_addStyle(".preferred { width: 114px !important; } .preferred a:before { content: '\\2605' !important; width: 114px !important; }");
+
     var tabPreferences = (function() {
         var tabPreferences = {};
         var commit = function() {
@@ -48,102 +48,51 @@
         };
     })();
 
-    var grabStreamTabText = function(tab) {
-        return /([^(]+)(?:\(\d+\))?/.exec(tab.firstChild.textContent)[1].trim();
-    };
+    var updateStreamTabs = (function() {
+        var grabStreamTabText = function(tab) {
+            return /([^(]+)(?:\(\d+\))?/.exec(tab.firstChild.textContent)[1].trim();
+        };
+        var initialized = false;
+        return function updateStreamTabs() {
+            var tabs = document.querySelector('#quicktabs-2 ul');
+            if (!tabs)
+                return;
+            var activeTab;
+            var preferredTab;
+            [].forEach.call(tabs.childNodes, function(tab) {
+                if (tab.classList.contains('active'))
+                    activeTab = tab;
+                if (tab.classList.contains('preferred'))
+                    tab.classList.remove('preferred'); // outdated
+                if (grabStreamTabText(tab) === tabPreferences.preferredTab())
+                    preferredTab = tab;
 
-    (function updateStreamTabs(preferredTabText) {
-        var tabs = document.querySelector('#quicktabs-2 ul');
-        if (!tabs)
-            return;
-        if (!tabs.hasChildNodes())
-            return;
-        var preferredTab = tabs.childNodes[0];
-        var activeTab = preferredTab;
-        [].slice.call(tabs.childNodes, 1).forEach(function(tab) {
-            var tabText = grabStreamTabText(tab);
-            if (tabText === preferredTabText)
-                preferredTab = tab;
-            if (tab.classList.contains('active'))
-                activeTab = tab;
-        });
-        if (preferredTab != activeTab) {
-            activeTab.classList.remove('active');
-            preferredTab.classList.add('active');
-        }
-    })(tabPreferences.preferredTab());
-
-    (function prepareCtrlDropdownMenu() {
-        GM_addStyle(GM_getResourceText('ctrldropdownmenu.css'));
-
-        var ctrlHeld = false;
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Control') {
-                if (!ctrlHeld)
-                    [].forEach.call(document.getElementsByClassName('ctrl-dropdown-menu'), function(menu) {
-                        menu.classList.add('enabled');
-                    });
-                ctrlHeld = true;
+                if (!initialized)
+                    tab.addEventListener('click', function(e) {
+                        if (e.ctrlKey) {
+                            if (tab.classList.contains('preferred'))
+                                tabPreferences.clearPreference();
+                            else
+                                tabPreferences.savePreference(grabStreamTabText(tab));
+                            updateStreamTabs();
+                        }
+                    }, true);
+            });
+            if (preferredTab) {
+                preferredTab.classList.add('preferred');
+                if (activeTab)
+                    if (activeTab != preferredTab) {
+                        if (window.navigator.userAgent.lastIndexOf('Firefox') !== -1) { // works smoother in firefox
+                            activeTab.classList.remove('active');
+                            preferredTab.classList.add('active');
+                        } else {
+                            preferredTab.firstChild.click();
+                        }
+                    }
             }
-
-        });
-        document.addEventListener('keyup', function(e) {
-            if (e.key === 'Control') {
-                if (ctrlHeld)
-                    [].forEach.call(document.getElementsByClassName('ctrl-dropdown-menu'), function(menu) {
-                        menu.classList.remove('enabled');
-                    });
-                ctrlHeld = false;
-            }
-        });
+            initialized = true;
+        };
     })();
 
-    (function injectStreamCtrlDropdownMenu(eraseOld) {
-        var createCtrlDropdownMenu = function(items) {
-            var menu = document.createElement('ul');
-            menu.className = 'ctrl-dropdown-menu';
-            items.forEach(function(item) {
-                var menuItem = document.createElement('li');
-                menuItem.className = 'ctrl-dropdown-menu-item';
-                menuItem.appendChild(document.createTextNode(item.text));
-                menuItem.addEventListener('click', item.action, false);
-                menu.appendChild(menuItem);
-            });
-            return menu;
-        };
-        var createCtrlDropdownMenuItem = function(text, action) {
-            return {
-                text: text,
-                action: action
-            };
-        };
-        var createOpenCtrlDropdownMenuItem = function(tabText) {
-            return createCtrlDropdownMenuItem('Открывать по умолчанию', function() {
-                tabPreferences.savePreference(tabText);
-                injectStreamCtrlDropdownMenu(true);
-            });
-        };
-        var createClearCtrlDropdownMenuItem = function() {
-            return createCtrlDropdownMenuItem('Очистить выбор', function() {
-                tabPreferences.clearPreference();
-                injectStreamCtrlDropdownMenu(true);
-            });
-        };
-
-        var preferredTabText = tabPreferences.preferredTab();
-        var tabs = document.querySelector('#quicktabs-2 ul');
-        if (!tabs)
-            return;
-        [].forEach.call(tabs.childNodes, function(tab) {
-            if (eraseOld)
-                if (tab.lastChild.classList.contains('ctrl-dropdown-menu'))
-                    tab.removeChild(tab.lastChild);
-            var tabText = grabStreamTabText(tab);
-            tab.appendChild(createCtrlDropdownMenu([
-                preferredTabText === tabText ?
-                createClearCtrlDropdownMenuItem() :
-                createOpenCtrlDropdownMenuItem(tabText)
-            ]));
-        });
-    })();
+    updateStreamTabs();
 })();

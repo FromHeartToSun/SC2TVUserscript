@@ -9,6 +9,8 @@
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_getResourceText
+// @updateURL   http://userscripts.org/scripts/source/185295.meta.js
+// @downloadURL http://userscripts.org/scripts/source/185295.user.js
 // @resource    ctrldropdownmenu.css https://raw.github.com/FromHeartToSun/SC2TVUserscript/master/ctrldropdownmenu.css
 // ==/UserScript==
 

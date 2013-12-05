@@ -4,7 +4,7 @@
 // @namespace   http://sc2tv.ru/users/Heart
 // @author      Heart
 // @include     http://sc2tv.ru/*
-// @version     0.0.3
+// @version     0.0.4
 // @grant       GM_addStyle
 // @grant       GM_getValue
 // @grant       GM_setValue

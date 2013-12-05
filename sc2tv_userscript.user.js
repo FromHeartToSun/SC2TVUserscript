@@ -69,7 +69,7 @@
 
                 if (!initialized)
                     tab.addEventListener('click', function(e) {
-                        if (e.ctrlKey) {
+                        if (e.shiftKey) {
                             if (tab.classList.contains('preferred'))
                                 tabPreferences.clearPreference();
                             else
